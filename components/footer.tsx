@@ -1,6 +1,7 @@
 import React from 'react'
-import { Github } from 'lucide-react'
+import Github from '@/public/github-mark.svg'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const Footer = () => {
     const currentYear = new Date().getFullYear()
@@ -9,8 +10,8 @@ const Footer = () => {
         <div className="w-full flex flex-col items-center gap-4 py-8 bg-gray-50 border-t">
             {/* Social Icons Row */}
             <div className="flex items-center justify-center gap-4">
-                <a href="https://github.com/your-username/zip-game" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800 transition-colors">
-                    <Github className="w-6 h-6" />
+                <a href="https://github.com/suio03/zip-game" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800 transition-colors">
+                    <Image src={Github} alt="Github" className="w-6 h-6" />
                 </a>
             </div>
             
