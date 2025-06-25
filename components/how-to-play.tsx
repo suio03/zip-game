@@ -49,7 +49,7 @@ const HowToPlay = () => {
                                 <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
                                 <span><strong>Win Condition:</strong> Reach dot 8 after filling all cells</span>
                             </div>
-                        </div>
+             w           </div>
                     </div>
                 </div>
 
