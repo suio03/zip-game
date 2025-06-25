@@ -13,8 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Connect the Dots Maze",
-  description: "Fill all cells and connect all dots in sequence - a fun puzzle game",
+  title: "Zip Game - The Ultimate Connect-the-Dots Puzzle!",
+  description: "Fill all cells and connect all dots in sequence - Fun Zip Game",
+  alternates: {
+    canonical: "https://zipgame.net",
+  },
+  openGraph: {
+    title: "Zip Game - The Ultimate Connect-the-Dots Puzzle!",
+    description: "Fill all cells and connect all dots in sequence - Fun Zip Game",
+    url: "https://zipgame.net",
+    siteName: "Zip Game",
+  },
 };
 
 export const viewport: Viewport = {

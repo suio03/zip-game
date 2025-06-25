@@ -186,7 +186,7 @@ export default function DragGrid({ grid, onPathComplete, onPathClear, completedP
       
       // Draw dot number
       ctx.fillStyle = 'white';
-      ctx.font = `bold ${Math.max(12, radius * 0.7)}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.font = `bold ${Math.max(16, radius * 0.7)}px -apple-system, BlinkMacSystemFont, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(dot.number.toString(), x, y);

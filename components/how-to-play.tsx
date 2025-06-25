@@ -30,26 +30,26 @@ const HowToPlay = () => {
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">Basic Rules</h3>
                         <div className="grid gap-3 text-gray-700">
                             <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+                                <div className="h-6 w-6 mt-1 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold flex items-center justify-center">1</div>
                                 <span><strong>Start at Dot 1:</strong> Begin your path at the numbered dot &ldquo;1&rdquo;</span>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+                                <div className="h-6 w-6 mt-1 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold flex items-center justify-center">2</div>
                                 <span><strong>Sequential Connection:</strong> Connect dots in numerical order (1→2→3→4→5→6→7→8)</span>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
+                                <div className="h-6 w-6 mt-1 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold flex items-center justify-center">3</div>
                                 <span><strong>Fill Every Cell:</strong> Your path must visit every single cell in the grid</span>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
+                                <div className="h-6 w-6 mt-1 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold flex items-center justify-center">4</div>
                                 <span><strong>L-Shaped Moves Only:</strong> Move horizontally first, then vertically (or vice versa)</span>
                             </div>
                             <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
+                                <div className="h-6 w-6 mt-1 flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold flex items-center justify-center">5</div>
                                 <span><strong>Win Condition:</strong> Reach dot 8 after filling all cells</span>
                             </div>
-             w           </div>
+                        </div>
                     </div>
                 </div>
 
