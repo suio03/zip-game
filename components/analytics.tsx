@@ -3,9 +3,9 @@ import Script from 'next/script'
 const Analytics = () => (
     <>
         {/* google analytics */}
-        {/* <Script
+        <Script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=G-Y0RLKVCNWW"
+            src="https://www.googletagmanager.com/gtag/js?id=G-RKWD5LSQV7"
         />
 
 
@@ -17,11 +17,11 @@ const Analytics = () => (
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
 
-                gtag('config', 'G-Y0RLKVCNWW');
+                gtag('config', 'G-RKWD5LSQV7');
                 `,
             }}
         />
-        <Script
+        {/* <Script
             id="microsoft-clarity"
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
