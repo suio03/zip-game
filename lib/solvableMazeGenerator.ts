@@ -1,15 +1,17 @@
 import { GameGrid, Position, Dot } from '../types/game';
 import { createEmptyGrid } from './gridGenerator';
+import { SeededRandom } from './seededRandom';
 
 // Generate a solvable maze where user must visit ALL cells and connect ALL dots
-export function generateSolvableMaze(size: number): GameGrid {
+export function generateSolvableMaze(size: number, seed?: number): GameGrid {
   const grid = createEmptyGrid(size);
   
   // Generate a Hamiltonian path that visits ALL cells exactly once
-  const hamiltonianPath = generateVariedHamiltonianPath(size);
+  const randomGenerator = seed ? new SeededRandom(seed) : null;
+  const hamiltonianPath = generateVariedHamiltonianPath(size, randomGenerator);
   
   // Select 8 random positions from this path for dots, ensuring dot 8 is at the end
-  const dotPositions = selectRandomDotPositions(hamiltonianPath, 8);
+  const dotPositions = selectRandomDotPositions(hamiltonianPath, 8, randomGenerator);
   
   // Place dots on the selected positions
   placeDots(grid, dotPositions);
@@ -20,7 +22,7 @@ export function generateSolvableMaze(size: number): GameGrid {
   return grid;
 }
 
-function generateVariedHamiltonianPath(size: number): Position[] {
+function generateVariedHamiltonianPath(size: number, randomGenerator?: SeededRandom | null): Position[] {
   // Generate truly random Hamiltonian paths that can start/end anywhere
   // This ensures dots 1 and 8 appear in varied, unpredictable positions
   
@@ -28,27 +30,27 @@ function generateVariedHamiltonianPath(size: number): Position[] {
   
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     // Try random starting position (anywhere on the grid)
-    const startX = Math.floor(Math.random() * size);
-    const startY = Math.floor(Math.random() * size);
+    const startX = randomGenerator ? randomGenerator.nextInt(size) : Math.floor(Math.random() * size);
+    const startY = randomGenerator ? randomGenerator.nextInt(size) : Math.floor(Math.random() * size);
     const startPos = { x: startX, y: startY };
     
-    const path = generateRandomHamiltonianFromStart(startPos, size);
+    const path = generateRandomHamiltonianFromStart(startPos, size, randomGenerator);
     if (path && path.length === size * size) {
       return path;
     }
   }
   
   // Fallback to ensure we always have a working puzzle
-  return generateRandomSnakePath(size);
+  return generateRandomSnakePath(size, randomGenerator);
 }
 
-function generateRandomHamiltonianFromStart(start: Position, size: number): Position[] | null {
+function generateRandomHamiltonianFromStart(start: Position, size: number, randomGenerator?: SeededRandom | null): Position[] | null {
   const path: Position[] = [];
   const visited = new Set<string>();
   const totalCells = size * size;
   
   // Use backtracking to find a Hamiltonian path from the random start position
-  if (findRandomHamiltonianPath(start, path, visited, size, totalCells)) {
+  if (findRandomHamiltonianPath(start, path, visited, size, totalCells, randomGenerator)) {
     return path;
   }
   
@@ -60,7 +62,8 @@ function findRandomHamiltonianPath(
   path: Position[],
   visited: Set<string>,
   size: number,
-  targetLength: number
+  targetLength: number,
+  randomGenerator?: SeededRandom | null
 ): boolean {
   const key = `${current.x},${current.y}`;
   
@@ -82,11 +85,11 @@ function findRandomHamiltonianPath(
   }
   
   // Get all possible next positions in random order for variety
-  const directions = getRandomizedDirections(current);
+  const directions = getRandomizedDirections(current, randomGenerator);
   
   // Try each direction
   for (const next of directions) {
-    if (findRandomHamiltonianPath(next, path, visited, size, targetLength)) {
+    if (findRandomHamiltonianPath(next, path, visited, size, targetLength, randomGenerator)) {
       return true;
     }
   }
@@ -97,7 +100,7 @@ function findRandomHamiltonianPath(
   return false;
 }
 
-function getRandomizedDirections(current: Position): Position[] {
+function getRandomizedDirections(current: Position, randomGenerator?: SeededRandom | null): Position[] {
   const directions = [
     { x: current.x + 1, y: current.y }, // right
     { x: current.x - 1, y: current.y }, // left
@@ -107,14 +110,14 @@ function getRandomizedDirections(current: Position): Position[] {
   
   // Fisher-Yates shuffle for true randomness
   for (let i = directions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomGenerator ? randomGenerator.nextInt(i + 1) : Math.floor(Math.random() * (i + 1));
     [directions[i], directions[j]] = [directions[j], directions[i]];
   }
   
   return directions;
 }
 
-function selectRandomDotPositions(path: Position[], dotCount: number): Position[] {
+function selectRandomDotPositions(path: Position[], dotCount: number, randomGenerator?: SeededRandom | null): Position[] {
   const positions: Position[] = [];
   
   // CRITICAL: Dot 1 at START of path, Dot 8 at END of path
@@ -128,7 +131,7 @@ function selectRandomDotPositions(path: Position[], dotCount: number): Position[
   
   // Randomly select 6 positions for dots 2-7 from the middle positions
   while (selectedIndices.size < dotCount - 2 && selectedIndices.size < middlePositions.length) {
-    const randomIndex = Math.floor(Math.random() * middlePositions.length);
+    const randomIndex = randomGenerator ? randomGenerator.nextInt(middlePositions.length) : Math.floor(Math.random() * middlePositions.length);
     selectedIndices.add(randomIndex);
   }
   
@@ -148,10 +151,10 @@ function selectRandomDotPositions(path: Position[], dotCount: number): Position[
   return positions;
 }
 
-function generateRandomSnakePath(size: number): Position[] {
+function generateRandomSnakePath(size: number, randomGenerator?: SeededRandom | null): Position[] {
   // Choose random starting corner
   const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
-  const randomCorner = corners[Math.floor(Math.random() * corners.length)];
+  const randomCorner = corners[randomGenerator ? randomGenerator.nextInt(corners.length) : Math.floor(Math.random() * corners.length)];
   return generateSnakePath(size, randomCorner);
 }
 

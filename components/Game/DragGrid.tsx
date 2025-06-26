@@ -7,7 +7,7 @@ import { useDragPath } from '../../hooks/useDragPath';
 interface DragGridProps {
   grid: GameGrid;
   onPathComplete: (path: Position[]) => void;
-  onPathClear: () => void;
+  onPathClear: number; // Changed to number trigger instead of function
   completedPath?: Position[];
 }
 
@@ -74,6 +74,36 @@ export default function DragGrid({ grid, onPathComplete, onPathClear, completedP
     handleMouseUp();
   };
 
+  // Check if dots are connected in the correct order (1->2->3->...->8)
+  const isDotsConnectedInOrder = (): boolean => {
+    if (currentPath.length === 0) return false;
+    
+    // Find which dots are in the current path and their positions in the path
+    const dotsInPath: { dot: any; pathIndex: number }[] = [];
+    
+    grid.dots.forEach(dot => {
+      const pathIndex = currentPath.findIndex(pos => 
+        pos.x === dot.position.x && pos.y === dot.position.y
+      );
+      if (pathIndex !== -1) {
+        dotsInPath.push({ dot, pathIndex });
+      }
+    });
+    
+    // Sort by path index to get the order they appear in the path
+    dotsInPath.sort((a, b) => a.pathIndex - b.pathIndex);
+    
+    // Check if they appear in the correct numerical order (1, 2, 3, ..., 8)
+    for (let i = 0; i < dotsInPath.length; i++) {
+      if (dotsInPath[i].dot.number !== i + 1) {
+        return false;
+      }
+    }
+    
+    // Must have all dots to be considered "in order"
+    return dotsInPath.length === grid.dots.length;
+  };
+
   // Touch event handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
@@ -101,9 +131,11 @@ export default function DragGrid({ grid, onPathComplete, onPathClear, completedP
     handleMouseUp();
   };
 
-  // Clear path when requested from parent
+  // Clear path when trigger changes
   useEffect(() => {
-    clearPath();
+    if (onPathClear > 0) {
+      clearPath();
+    }
   }, [onPathClear, clearPath]);
 
   // Draw the grid and path
@@ -270,7 +302,7 @@ export default function DragGrid({ grid, onPathComplete, onPathClear, completedP
                 Keep dragging to fill more cells...
               </p>
             )}
-            {currentPath.length === grid.size * grid.size && (
+            {currentPath.length === grid.size * grid.size && !isDotsConnectedInOrder() && (
               <p className="text-red-600 font-bold">
                 All cells filled! Check if all dots are connected!
               </p>

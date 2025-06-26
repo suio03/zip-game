@@ -28,11 +28,16 @@ export interface Path {
   isValid: boolean;
 }
 
+export type GameMode = 'daily' | 'unlimited';
+
 export interface GameState {
   grid: GameGrid;
   currentPath: Path;
   isGameComplete: boolean;
   difficulty: 'easy' | 'medium';
+  gameMode: GameMode;
+  isDailyCompleted: boolean;
+  dailyChallengeDate: string;
 }
 
 export interface GridConfig {

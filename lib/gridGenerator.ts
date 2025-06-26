@@ -36,6 +36,6 @@ export function placeDots(grid: GameGrid, positions: Position[]): void {
   });
 }
 
-export function generateGrid(size: number): GameGrid {
-  return generateSolvableMaze(size);
+export function generateGrid(size: number, seed?: number): GameGrid {
+  return generateSolvableMaze(size, seed);
 }
