@@ -11,7 +11,7 @@ import Faq from '../faq';
 import { getDailyStats, getUnlimitedStats, getPerformanceStats } from '../../lib/userStats';
 
 // Timer hook
-function useTimer(isRunning: boolean, onReset: () => void) {
+function useTimer(isRunning: boolean, resetTrigger: number) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function useTimer(isRunning: boolean, onReset: () => void) {
 
   useEffect(() => {
     setSeconds(0);
-  }, [onReset]);
+  }, [resetTrigger]);
 
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -79,7 +79,7 @@ function useCountdown() {
 }
 
 export default function GameBoard() {
-  const { gameState, resetGame, addDotToPath, clearPath, switchGameMode } = useGameState();
+  const { gameState, resetGame, addDotToPath, clearPath, switchGameMode, setGameCompleted } = useGameState();
 
   const [pathClearTrigger, setPathClearTrigger] = useState(0);
   const [completedPath, setCompletedPath] = useState<Position[] | null>(null);
@@ -103,24 +103,37 @@ export default function GameBoard() {
     setUnlimitedStats(getUnlimitedStats());
     setPerformanceStats(getPerformanceStats());
     
-    // Restore completion time for today's daily challenge if it exists
-    if (gameState.gameMode === 'daily' && gameState.isDailyCompleted) {
+    // Restore completion time and path for today's daily challenge if it exists
+    if (gameState.gameMode === 'daily') {
       const todayString = gameState.dailyChallengeDate;
       const savedTime = localStorage.getItem(`daily-completion-time-${todayString}`);
-      if (savedTime) {
+      const savedPath = localStorage.getItem(`daily-completion-path-${todayString}`);
+      
+      // Check if we have a saved completion (regardless of gameState.isDailyCompleted)
+      if (savedTime && savedPath) {
         setCompletionTime(savedTime);
-        // Also show the completed path for the daily challenge
-        const solutionPath = (gameState.grid as unknown as { solutionPath?: Position[] }).solutionPath;
-        if (solutionPath) {
-          setCompletedPath(solutionPath);
+        // Restore the user's actual completion path
+        try {
+          const userPath = JSON.parse(savedPath) as Position[];
+          setCompletedPath(userPath);
+          // Set the game state to completed
+          setGameCompleted();
+        } catch (error) {
+          console.error('Failed to parse saved completion path:', error);
+          // Fallback to solution path if parsing fails
+          const solutionPath = (gameState.grid as unknown as { solutionPath?: Position[] }).solutionPath;
+          if (solutionPath) {
+            setCompletedPath(solutionPath);
+            setGameCompleted();
+          }
         }
       }
     }
-  }, [gameState.gameMode, gameState.isDailyCompleted, gameState.dailyChallengeDate]);
+  }, [gameState.gameMode, gameState.dailyChallengeDate, gameState.grid, setGameCompleted]);
 
   // Timer - only runs for daily challenges, when game is not completed and not showing solution
   const isTimerRunning = gameState.gameMode === 'daily' && !gameState.isGameComplete && !showingSolution && !completedPath;
-  const { formattedTime, resetTimer } = useTimer(isTimerRunning, timerResetTrigger);
+  const { formattedTime } = useTimer(isTimerRunning, timerResetTrigger);
 
   // Countdown timer for next daily challenge
   const countdownTime = useCountdown();
@@ -148,12 +161,13 @@ export default function GameBoard() {
     setCompletedPath(path);
     setShowingSolution(false); // Hide solution when player completes
     
-    // Capture completion time for daily challenges
+    // Capture completion time and path for daily challenges
     if (gameState.gameMode === 'daily') {
       setCompletionTime(formattedTime);
-      // Save completion time to localStorage
+      // Save completion time and path to localStorage
       const todayString = gameState.dailyChallengeDate;
       localStorage.setItem(`daily-completion-time-${todayString}`, formattedTime);
+      localStorage.setItem(`daily-completion-path-${todayString}`, JSON.stringify(path));
     }
     
     // Update game state to show completion
@@ -345,7 +359,12 @@ export default function GameBoard() {
               <div className="lg:flex hidden justify-center gap-4 mb-6">
                 <button
                   onClick={handleClearPath}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium shadow-md"
+                  disabled={gameState.isGameComplete || !!completedPath}
+                  className={`px-4 py-2 rounded-lg transition-colors font-medium shadow-md ${
+                    gameState.isGameComplete || completedPath
+                      ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+                      : 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                  }`}
                 >
                   🔄 Undo
                 </button>
@@ -447,7 +466,12 @@ export default function GameBoard() {
               <div className="space-y-3">
                 <button
                   onClick={handleClearPath}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-lg transition-colors font-medium shadow-md"
+                  disabled={gameState.isGameComplete || !!completedPath}
+                  className={`w-full px-4 py-3 rounded-lg transition-colors font-medium shadow-md ${
+                    gameState.isGameComplete || completedPath
+                      ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+                      : 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                  }`}
                 >
                   🔄 Undo Path
                 </button>

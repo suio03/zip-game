@@ -16,13 +16,17 @@ export function useGameState(initialDifficulty: 'easy' | 'medium' = 'easy', init
     const seed = isDailyMode ? getTodaysDailySeed() : undefined;
     const grid = generateGrid(size, seed);
     
+    // Check if daily challenge is already completed
+    const isDailyCompleted = isDailyCompletedToday();
+    const isGameComplete = isDailyMode && isDailyCompleted;
+    
     return {
       grid,
       currentPath: { dots: [], isComplete: false, isValid: true },
-      isGameComplete: false,
+      isGameComplete,
       difficulty: initialDifficulty,
       gameMode: initialGameMode,
-      isDailyCompleted: isDailyCompletedToday(),
+      isDailyCompleted,
       dailyChallengeDate: getTodaysDateString()
     };
   });
@@ -116,11 +120,20 @@ export function useGameState(initialDifficulty: 'easy' | 'medium' = 'easy', init
     resetGame(gameState.difficulty, newGameMode);
   }, [resetGame, gameState.difficulty]);
 
+  const setGameCompleted = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      isGameComplete: true,
+      isDailyCompleted: prev.gameMode === 'daily' ? true : prev.isDailyCompleted
+    }));
+  }, []);
+
   return {
     gameState,
     resetGame,
     addDotToPath,
     clearPath,
-    switchGameMode
+    switchGameMode,
+    setGameCompleted
   };
 }
