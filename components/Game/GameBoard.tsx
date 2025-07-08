@@ -287,7 +287,7 @@ export default function GameBoard() {
                 </div>
             </div>
 
-            <div className="max-w-3xl mx-auto px-4 py-8">
+            <div className={`${showControls ? 'max-w-6xl' : 'max-w-3xl'} mx-auto px-4 py-8 transition-all duration-300`}>
                 <div className={`grid gap-8 transition-all duration-300 ${showControls ? 'lg:grid-cols-3' : 'lg:grid-cols-1'}`}>
 
                     {/* Main Game Area */}
